@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Tarea - Sistema de Tareas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('dashboard_jefe' if session.rol == 'jefe' else 'dashboard_empleado') }}">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-item active">Ver Tarea</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card priority-{{ tarea.prioridad }} estado-{{ tarea.estado.replace(' ', '-') }}">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h4 class="mb-0">{{ tarea.titulo }}</h4>
+                    </div>
+                    <div class="col-auto">
+                        <span class="badge bg-{{ 'danger' if tarea.prioridad == 'alta' else 'warning' if tarea.prioridad == 'media' else 'success' }} fs-6">
+                            {{ tarea.prioridad.upper() }}
+                        </span>
+                        <span class="badge bg-{{ 'secondary' if tarea.estado == 'pendiente' else 'info' if tarea.estado == 'en progreso' else 'success' }} fs-6">
+                            {{ tarea.estado.upper() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <h5><i class="fas fa-align-left"></i> Descripción</h5>
+                <p class="card-text">{{ tarea.descripcion }}</p>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle"></i> Información General</h6>
+                        <p class="mb-1"><strong>ID:</strong> {{ tarea.id }}</p>
+                        <p class="mb-1"><strong>Estado:</strong> {{ tarea.estado }}</p>
+                        <p class="mb-1"><strong>Prioridad:</strong> {{ tarea.prioridad }}</p>
+                        <p class="mb-1"><strong>Fecha de Creación:</strong> {{ tarea.fecha_creacion }}</p>
+                        {% if tarea.fecha_limite %}
+                        <p class="mb-1"><strong>Fecha Límite:</strong> {{ tarea.fecha_limite }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user"></i> Asignación</h6>
+                        <p class="mb-1"><strong>Asignado a:</strong> {{ tarea.asignado_a }}</p>
+                        {% if session.rol == 'jefe' %}
+                        <p class="mb-1"><strong>Progreso Actual:</strong></p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6><i class="fas fa-chart-line"></i> Progreso de la Tarea</h6>
+                <div class="progress mb-3" style="height: 30px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: {{ tarea.progreso }}%">
+                        <strong>{{ tarea.progreso }}% Completado</strong>
+                    </div>
+                </div>
+                
+                {% if tarea.comentarios %}
+                <hr>
+                <h6><i class="fas fa-comments"></i> Comentarios y Actualizaciones</h6>
+                <div class="timeline">
+                    {% for comentario in tarea.comentarios %}
+                    <div class="border-start border-3 border-primary ps-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ comentario.autor }}</strong>
+                                <small class="text-muted d-block">{{ comentario.fecha }}</small>
+                            </div>
+                        </div>
+                        <p class="mb-0 mt-2">{{ comentario.texto }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        {% if session.rol == 'jefe' %}
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-tools"></i> Acciones del Jefe</h6>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('eliminar_tarea', tarea_id=tarea.id) }}" 
+                   class="btn btn-danger w-100 mb-2"
+                   onclick="return confirm('¿Está seguro de eliminar esta tarea? Esta acción no se puede deshacer.')">
+                    <i class="fas fa-trash"></i> Eliminar Tarea
+                </a>
+                <a href="{{ url_for('dashboard_jefe') }}" class="btn btn-secondary w-100">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-edit"></i> Actualizar Progreso</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('actualizar_progreso') }}">
+                    <input type="hidden" name="tarea_id" value="{{ tarea.id }}">
+                    
+                    <div class="mb-3">
+                        <label for="progreso" class="form-label">
+                            Progreso: <span id="progresoValue">{{ tarea.progreso }}</span>%
+                        </label>
+                        <input type="range" class="form-range" id="progreso" 
+                               name="progreso" min="0" max="100" value="{{ tarea.progreso }}"
+                               oninput="document.getElementById('progresoValue').textContent = this.value">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" name="estado">
+                            <option value="pendiente" {% if tarea.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                            <option value="en progreso" {% if tarea.estado == 'en progreso' %}selected{% endif %}>En Progreso</option>
+                            <option value="completada" {% if tarea.estado == 'completada' %}selected{% endif %}>Completada</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="comentario" class="form-label">Comentario</label>
+                        <textarea class="form-control" id="comentario" 
+                                  name="comentario" rows="3" 
+                                  placeholder="Describe tu progreso o cualquier problema..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save"></i> Actualizar Progreso
+                    </button>
+                </form>
+                
+                <hr>
+                
+                <a href="{{ url_for('dashboard_empleado') }}" class="btn btn-secondary w-100">
+                    <i class="fas fa-arrow-left"></i> Volver a Mis Tareas
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> Detalles Adicionales</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ tarea.id }}</h4>
+                        <small>ID Tarea</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info">{{ tarea.progreso }}%</h4>
+                        <small>Progreso</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    {% if tarea.estado == 'completada' %}
+                    <i class="fas fa-check-circle fa-3x text-success"></i>
+                    <p class="mt-2 text-success fw-bold">Tarea Completada</p>
+                    {% elif tarea.estado == 'en progreso' %}
+                    <i class="fas fa-spinner fa-3x text-warning"></i>
+                    <p class="mt-2 text-warning fw-bold">En Progreso</p>
+                    {% else %}
+                    <i class="fas fa-clock fa-3x text-secondary"></i>
+                    <p class="mt-2 text-secondary fw-bold">Pendiente</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

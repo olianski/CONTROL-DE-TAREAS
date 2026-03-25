@@ -1,0 +1,65 @@
+{
+  "admin_maestro": {
+    "usuario": "admin",
+    "password": "superadmin123"
+  },
+  "empresas": {
+    "emp_1": {
+      "nombre": "cocacola",
+      "nit": "830047819",
+      "direccion": "cr 25 25 69",
+      "telefono": "3217720417",
+      "email": "olianskiwtf568@gmail.com",
+      "sector": "tecnologia",
+      "estado": "activo",
+      "fecha_creacion": "2026-03-25 17:33:05",
+      "creado_por": "admin",
+      "usuarios": {
+        "admin": {
+          "password": "superadmin123",
+          "rol": "jefe",
+          "nombre": "sebastian romero donoso",
+          "email": "olianskiwtf568@gmail.com",
+          "fecha_registro": "2026-03-25 17:33:05"
+        },
+        "emp_prueba1": {
+          "password": "test123",
+          "rol": "empleado",
+          "nombre": "Empleado Prueba 1",
+          "email": "test1@empresa.com",
+          "departamento": "Pruebas",
+          "fecha_registro": "2026-03-25 17:33:05",
+          "es_prueba": true
+        },
+        "emp_prueba2": {
+          "password": "test123",
+          "rol": "empleado",
+          "nombre": "Empleado Prueba 2",
+          "email": "test2@empresa.com",
+          "departamento": "Calidad",
+          "fecha_registro": "2026-03-25 17:33:05",
+          "es_prueba": true
+        }
+      },
+      "tareas": [
+        {
+          "id": 1,
+          "titulo": "Tarea de Prueba - Configuración del Sistema",
+          "descripcion": "Esta es una tarea de prueba para verificar el funcionamiento del sistema. Por favor, actualiza el progreso y marca como completada.",
+          "asignado_a": "emp_prueba1",
+          "prioridad": "media",
+          "estado": "pendiente",
+          "progreso": 0,
+          "fecha_creacion": "2026-03-25 17:33:05",
+          "fecha_limite": "",
+          "comentarios": [],
+          "es_prueba": true
+        }
+      ]
+    }
+  },
+  "global_config": {
+    "modo_mantenimiento": false,
+    "version": "1.0.0"
+  }
+}

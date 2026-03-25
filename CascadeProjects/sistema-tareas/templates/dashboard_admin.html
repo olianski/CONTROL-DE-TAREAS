@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrador - Sistema de Tareas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-user-shield"></i> Dashboard Administrador Maestro</h2>
+            <div>
+                <span class="badge bg-dark">Usuario: {{ admin_usuario }}</span>
+                <a href="{{ url_for('admin_logout') }}" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </div>
+        <p class="text-muted">Gestión completa de empresas y usuarios del sistema</p>
+    </div>
+</div>
+
+<!-- Estadísticas Generales -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ stats.total_empresas }}</h3>
+                <p class="card-text">Total Empresas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ stats.empresas_activas }}</h3>
+                <p class="card-text">Empresas Activas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">{{ stats.total_usuarios }}</h3>
+                <p class="card-text">Total Usuarios</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">{{ stats.total_tareas }}</h3>
+                <p class="card-text">Total Tareas</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-tools"></i> Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('crear_empresa') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Crear Nueva Empresa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Empresas -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-building"></i> Empresas Registradas</h5>
+            </div>
+            <div class="card-body">
+                {% if empresas %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>NIT</th>
+                                    <th>Sector</th>
+                                    <th>Estado</th>
+                                    <th>Usuarios</th>
+                                    <th>Tareas</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for empresa_id, empresa in empresas.items() %}
+                                <tr>
+                                    <td><span class="badge bg-secondary">{{ empresa_id }}</span></td>
+                                    <td><strong>{{ empresa.nombre }}</strong></td>
+                                    <td>{{ empresa.nit }}</td>
+                                    <td>{{ empresa.sector }}</td>
+                                    <td>
+                                        {% if empresa.estado == 'activo' %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Suspendido</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ empresa.usuarios|length }}</td>
+                                    <td>{{ empresa.tareas|length }}</td>
+                                    <td>{{ empresa.fecha_creacion }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('ver_empresa', empresa_id=empresa_id) }}" 
+                                               class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            
+                                            {% if empresa.estado == 'activo' %}
+                                                <a href="{{ url_for('suspender_empresa', empresa_id=empresa_id) }}" 
+                                                   class="btn btn-outline-warning" 
+                                                   onclick="return confirm('¿Está seguro de suspender esta empresa?')"
+                                                   title="Suspender empresa">
+                                                    <i class="fas fa-pause"></i>
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ url_for('activar_empresa', empresa_id=empresa_id) }}" 
+                                                   class="btn btn-outline-success" 
+                                                   onclick="return confirm('¿Está seguro de activar esta empresa?')"
+                                                   title="Activar empresa">
+                                                    <i class="fas fa-play"></i>
+                                                </a>
+                                            {% endif %}
+                                            
+                                            <a href="#" 
+                                               class="btn btn-outline-info" 
+                                               onclick="copiarAcceso('{{ empresa_id }}')"
+                                               title="Copiar URL de acceso">
+                                                <i class="fas fa-copy"></i>
+                                            </a>
+                                            
+                                            <a href="{{ url_for('eliminar_empresa', empresa_id=empresa_id) }}" 
+                                               class="btn btn-outline-danger" 
+                                               onclick="return confirm('¿Está seguro de eliminar esta empresa? Esta acción no se puede deshacer.')"
+                                               title="Eliminar empresa">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fas fa-building fa-3x mb-3"></i>
+                        <h5>No hay empresas registradas</h5>
+                        <p>Comienza creando tu primera empresa</p>
+                        <a href="{{ url_for('crear_empresa') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Crear Primera Empresa
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copiarAcceso(empresaId) {
+    const url = `${window.location.origin}/empresa/${empresaId}/login`;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('URL de acceso copiada: ' + url);
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Empresa - Administrador{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-building"></i> Detalles de Empresa</h2>
+            <a href="{{ url_for('dashboard_admin') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Información General</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nombre:</strong> {{ empresa.nombre }}</p>
+                        <p><strong>NIT:</strong> {{ empresa.nit }}</p>
+                        <p><strong>Dirección:</strong> {{ empresa.direccion or 'No especificada' }}</p>
+                        <p><strong>Teléfono:</strong> {{ empresa.telefono or 'No especificado' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Email:</strong> {{ empresa.email or 'No especificado' }}</p>
+                        <p><strong>Sector:</strong> {{ empresa.sector }}</p>
+                        <p><strong>Estado:</strong> 
+                            {% if empresa.estado == 'activo' %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger">Suspendido</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Fecha Creación:</strong> {{ empresa.fecha_creacion }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-users"></i> Usuarios ({{ empresa.usuarios|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Nombre</th>
+                                <th>Rol</th>
+                                <th>Email</th>
+                                <th>Departamento</th>
+                                <th>Fecha Registro</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario_id, usuario in empresa.usuarios.items() %}
+                            <tr>
+                                <td><code>{{ usuario_id }}</code></td>
+                                <td>{{ usuario.nombre }}</td>
+                                <td>
+                                    {% if usuario.rol == 'jefe' %}
+                                        <span class="badge bg-primary">Jefe</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Empleado</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ usuario.email or '-' }}</td>
+                                <td>{{ usuario.departamento or '-' }}</td>
+                                <td>{{ usuario.fecha_registro }}</td>
+                                <td>
+                                    {% if usuario.get('es_prueba') %}
+                                        <span class="badge bg-warning">Prueba</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Real</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-tasks"></i> Tareas ({{ empresa.tareas|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if empresa.tareas %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Título</th>
+                                    <th>Asignado a</th>
+                                    <th>Prioridad</th>
+                                    <th>Estado</th>
+                                    <th>Progreso</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tarea in empresa.tareas %}
+                                <tr>
+                                    <td><span class="badge bg-secondary">{{ tarea.id }}</span></td>
+                                    <td>{{ tarea.titulo }}</td>
+                                    <td>{{ empresa.usuarios[tarea.asignado_a].nombre }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if tarea.prioridad == 'alta' else 'warning' if tarea.prioridad == 'media' else 'success' }}">
+                                            {{ tarea.prioridad.upper() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'secondary' if tarea.estado == 'pendiente' else 'info' if tarea.estado == 'en progreso' else 'success' }}">
+                                            {{ tarea.estado.upper() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ tarea.progreso }}%">
+                                                {{ tarea.progreso }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ tarea.fecha_creacion }}</td>
+                                    <td>
+                                        {% if tarea.get('es_prueba') %}
+                                            <span class="badge bg-warning">Prueba</span>
+                                        {% else %}
+                                            <span class="badge bg-info">Real</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No hay tareas registradas para esta empresa.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-link"></i> Acceso Rápido</h6>
+            </div>
+            <div class="card-body">
+                <h6>URL de Acceso</h6>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="url_acceso" readonly
+                           value="{{ url_for('empresa_login', empresa_id=empresa_id, _external=True) }}">
+                    <button class="btn btn-outline-secondary" onclick="copiarURL()" type="button">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                
+                <h6>Acciones</h6>
+                <div class="d-grid gap-2">
+                    {% if empresa.estado == 'activo' %}
+                        <a href="{{ url_for('suspender_empresa', empresa_id=empresa_id) }}" 
+                           class="btn btn-warning" 
+                           onclick="return confirm('¿Está seguro de suspender esta empresa?')">
+                            <i class="fas fa-pause"></i> Suspender Empresa
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('activar_empresa', empresa_id=empresa_id) }}" 
+                           class="btn btn-success" 
+                           onclick="return confirm('¿Está seguro de activar esta empresa?')">
+                            <i class="fas fa-play"></i> Activar Empresa
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('eliminar_empresa', empresa_id=empresa_id) }}" 
+                       class="btn btn-danger" 
+                       onclick="return confirm('¿Está seguro de eliminar esta empresa? Esta acción no se puede deshacer.')">
+                        <i class="fas fa-trash"></i> Eliminar Empresa
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-pie"></i> Estadísticas</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ empresa.usuarios|length }}</h4>
+                        <small>Usuarios</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success">{{ empresa.tareas|length }}</h4>
+                        <small>Tareas</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h5 class="text-info">{{ empresa.usuarios|selectattr('rol', 'equalto', 'empleado')|list|length }}</h5>
+                        <small>Empleados</small>
+                    </div>
+                    <div class="col-6">
+                        <h5 class="text-warning">{{ empresa.tareas|selectattr('estado', 'equalto', 'completada')|list|length }}</h5>
+                        <small>Completadas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copiarURL() {
+    const urlInput = document.getElementById('url_acceso');
+    navigator.clipboard.writeText(urlInput.value).then(() => {
+        alert('URL copiada: ' + urlInput.value);
+    });
+}
+</script>
+{% endblock %}

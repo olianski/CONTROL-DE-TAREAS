@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Empleado - Sistema de Tareas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-clipboard-list"></i> Mis Tareas</h2>
+        <p class="text-muted">Bienvenido, {{ nombre }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% if tareas %}
+            {% for tarea in tareas %}
+            <div class="card task-card priority-{{ tarea.prioridad }} estado-{{ tarea.estado.replace(' ', '-') }}">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-0">{{ tarea.titulo }}</h5>
+                            <small class="text-muted">
+                                <span class="badge bg-{{ 'danger' if tarea.prioridad == 'alta' else 'warning' if tarea.prioridad == 'media' else 'success' }}">
+                                    {{ tarea.prioridad.upper() }}
+                                </span>
+                                <span class="badge bg-{{ 'secondary' if tarea.estado == 'pendiente' else 'info' if tarea.estado == 'en progreso' else 'success' }}">
+                                    {{ tarea.estado.upper() }}
+                                </span>
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="{{ url_for('ver_tarea', tarea_id=tarea.id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ tarea.descripcion }}</p>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar"></i> Creada: {{ tarea.fecha_creacion }}<br>
+                                {% if tarea.fecha_limite %}
+                                <i class="fas fa-clock"></i> Límite: {{ tarea.fecha_limite }}
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ tarea.progreso }}%">
+                                    {{ tarea.progreso }}% Completado
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion" id="actualizarProgreso{{ tarea.id }}">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ tarea.id }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapse{{ tarea.id }}">
+                                    <i class="fas fa-edit"></i> Actualizar Progreso
+                                </button>
+                            </h2>
+                            <div id="collapse{{ tarea.id }}" class="accordion-collapse collapse" 
+                                 data-bs-parent="#actualizarProgreso{{ tarea.id }}">
+                                <div class="accordion-body">
+                                    <form method="POST" action="{{ url_for('actualizar_progreso') }}">
+                                        <input type="hidden" name="tarea_id" value="{{ tarea.id }}">
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="progreso{{ tarea.id }}" class="form-label">
+                                                        Progreso: <span id="progresoValue{{ tarea.id }}">{{ tarea.progreso }}</span>%
+                                                    </label>
+                                                    <input type="range" class="form-range" id="progreso{{ tarea.id }}" 
+                                                           name="progreso" min="0" max="100" value="{{ tarea.progreso }}"
+                                                           oninput="document.getElementById('progresoValue{{ tarea.id }}').textContent = this.value">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="estado{{ tarea.id }}" class="form-label">Estado</label>
+                                                    <select class="form-select" id="estado{{ tarea.id }}" name="estado">
+                                                        <option value="pendiente" {% if tarea.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                                        <option value="en progreso" {% if tarea.estado == 'en progreso' %}selected{% endif %}>En Progreso</option>
+                                                        <option value="completada" {% if tarea.estado == 'completada' %}selected{% endif %}>Completada</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="comentario{{ tarea.id }}" class="form-label">Comentario (opcional)</label>
+                                            <textarea class="form-control" id="comentario{{ tarea.id }}" 
+                                                      name="comentario" rows="2" 
+                                                      placeholder="Agrega un comentario sobre tu progreso..."></textarea>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Actualizar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if tarea.comentarios %}
+                    <div class="mt-3">
+                        <h6><i class="fas fa-comments"></i> Comentarios:</h6>
+                        {% for comentario in tarea.comentarios %}
+                        <div class="border-start border-3 border-primary ps-3 mb-2">
+                            <small class="text-muted">{{ comentario.fecha }} - {{ comentario.autor }}</small>
+                            <p class="mb-1">{{ comentario.texto }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-clipboard-check fa-4x text-muted mb-3"></i>
+                    <h5>No tienes tareas asignadas</h5>
+                    <p class="text-muted">Tu jefe te asignará tareas pronto.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ tareas|length }}</h3>
+                <p class="card-text">Total de Tareas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">{{ tareas|selectattr('estado', 'equalto', 'en progreso')|list|length }}</h3>
+                <p class="card-text">En Progreso</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ tareas|selectattr('estado', 'equalto', 'completada')|list|length }}</h3>
+                <p class="card-text">Completadas</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

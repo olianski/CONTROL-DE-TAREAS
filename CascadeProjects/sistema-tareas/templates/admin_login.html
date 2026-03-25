@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Administrador Maestro - Sistema de Tareas{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-header text-center bg-dark text-white">
+                <h4><i class="fas fa-user-shield"></i> Administrador Maestro</h4>
+                <small>Acceso exclusivo para administradores del sistema</small>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_auth') }}">
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label">Usuario Administrador</label>
+                        <input type="text" class="form-control" id="usuario" name="usuario" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                                <i class="fas fa-eye" id="password-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                </form>
+            </div>
+            <div class="card-footer text-muted text-center">
+                <small>
+                    <strong>Credenciales por defecto:</strong><br>
+                    Usuario: admin<br>
+                    Contraseña: superadmin123
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(fieldId) {
+    const passwordField = document.getElementById(fieldId);
+    const icon = document.getElementById(fieldId + '-icon');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        passwordField.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+</script>
+{% endblock %}
