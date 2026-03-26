@@ -22,6 +22,78 @@
             </div>
             <div class="card-body">
                 <form method="POST">
+                    <!-- Selección de Plan de Suscripción -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="mb-3"><i class="fas fa-crown"></i> Plan de Suscripción</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white text-center">
+                                            <h6 class="mb-0">Plan Básico</h6>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <h3 class="text-primary">$10<span class="text-muted">/mes</span></h3>
+                                            <ul class="list-unstyled small">
+                                                <li><i class="fas fa-check text-success"></i> Hasta 5 empleados</li>
+                                                <li><i class="fas fa-check text-success"></i> Hasta 50 tareas</li>
+                                                <li><i class="fas fa-check text-success"></i> Soporte por email</li>
+                                            </ul>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="plan_suscripcion" id="plan_basico" value="basico" checked>
+                                                <label class="form-check-label" for="plan_basico">Seleccionar</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-success">
+                                        <div class="card-header bg-success text-white text-center">
+                                            <h6 class="mb-0">Plan Profesional <span class="badge bg-warning">Popular</span></h6>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <h3 class="text-success">$25<span class="text-muted">/mes</span></h3>
+                                            <ul class="list-unstyled small">
+                                                <li><i class="fas fa-check text-success"></i> Hasta 20 empleados</li>
+                                                <li><i class="fas fa-check text-success"></i> Hasta 200 tareas</li>
+                                                <li><i class="fas fa-check text-success"></i> Soporte prioritario</li>
+                                                <li><i class="fas fa-check text-success"></i> Reportes avanzados</li>
+                                            </ul>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="plan_suscripcion" id="plan_profesional" value="profesional">
+                                                <label class="form-check-label" for="plan_profesional">Seleccionar</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark text-center">
+                                            <h6 class="mb-0">Plan Enterprise</h6>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <h3 class="text-warning">$50<span class="text-muted">/mes</span></h3>
+                                            <ul class="list-unstyled small">
+                                                <li><i class="fas fa-check text-success"></i> Hasta 100 empleados</li>
+                                                <li><i class="fas fa-check text-success"></i> Tareas ilimitadas</li>
+                                                <li><i class="fas fa-check text-success"></i> Soporte 24/7</li>
+                                                <li><i class="fas fa-check text-success"></i> API access</li>
+                                                <li><i class="fas fa-check text-success"></i> Personalización</li>
+                                            </ul>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="plan_suscripcion" id="plan_enterprise" value="enterprise">
+                                                <label class="form-check-label" for="plan_enterprise">Seleccionar</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Datos de la Empresa -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">

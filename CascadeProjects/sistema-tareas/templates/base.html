@@ -7,43 +7,240 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --text-color: #212529;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --navbar-bg: #4361ee;
+            --navbar-text: #ffffff;
+            --shadow-color: rgba(0,0,0,0.1);
+            --hover-bg: #e9ecef;
+        }
+        
         body {
-            background-color: #f8f9fa;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
+        
         .navbar-brand {
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 1.25rem;
+            transition: color 0.3s ease;
         }
+        
+        .navbar-brand:hover {
+            color: var(--light-color);
+        }
+        
         .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+        
+        .form-control, .form-select {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--card-bg);
+            border-color: var(--navbar-bg);
+            color: var(--text-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            outline: none;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
         }
-        .progress {
-            height: 25px;
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--light-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #3651de;
+            border-color: #3651de;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+            color: var(--light-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #bb2d3b;
+            border-color: #bb2d3b;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: var(--light-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #157347;
+            border-color: #157347;
+        }
+        
+        .alert {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .table {
+            color: var(--text-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .table th {
+            border-color: var(--border-color);
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .table td {
+            border-color: var(--border-color);
+            color: var(--text-color);
+            padding: 16px 12px;
+            vertical-align: middle;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
         .priority-alta {
-            border-left: 4px solid #dc3545;
+            border-left: 4px solid var(--danger-color);
         }
+        
         .priority-media {
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid var(--warning-color);
         }
+        
         .priority-baja {
-            border-left: 4px solid #28a745;
+            border-left: 4px solid var(--success-color);
         }
+        
         .estado-pendiente {
             background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
         }
+        
         .estado-en-progreso {
             background-color: #cce5ff;
+            color: #084298;
+            border: 1px solid #74c0fc;
         }
+        
         .estado-completada {
             background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #75b798;
         }
-        .task-card {
-            transition: transform 0.2s;
+        
+        .text-muted {
+            color: #6c757d;
+            font-size: 0.875rem;
         }
-        .task-card:hover {
-            transform: translateY(-2px);
+        
+        .progress {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
         }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), #3651de);
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        
+        /* Clases dinámicas para barras de progreso */
+        .progress-enhanced {
+            height: 25px !important;
+        }
+        
+        .progress-bar-enhanced {
+            font-weight: bold !important;
+        }
+        
+        /* Clases de anchos predefinidos para evitar errores de linting */
+        .w-0 { width: 0% !important; }
+        .w-5 { width: 5% !important; }
+        .w-10 { width: 10% !important; }
+        .w-15 { width: 15% !important; }
+        .w-20 { width: 20% !important; }
+        .w-25 { width: 25% !important; }
+        .w-30 { width: 30% !important; }
+        .w-35 { width: 35% !important; }
+        .w-40 { width: 40% !important; }
+        .w-45 { width: 45% !important; }
+        .w-50 { width: 50% !important; }
+        .w-55 { width: 55% !important; }
+        .w-60 { width: 60% !important; }
+        .w-65 { width: 65% !important; }
+        .w-70 { width: 70% !important; }
+        .w-75 { width: 75% !important; }
+        .w-80 { width: 80% !important; }
+        .w-85 { width: 85% !important; }
+        .w-90 { width: 90% !important; }
+        .w-95 { width: 95% !important; }
+        .w-100 { width: 100% !important; }
     </style>
 </head>
 <body>

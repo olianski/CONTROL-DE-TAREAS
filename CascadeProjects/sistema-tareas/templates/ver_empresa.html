@@ -54,6 +54,7 @@
                         <thead>
                             <tr>
                                 <th>Usuario</th>
+                                <th>Contraseña</th>
                                 <th>Nombre</th>
                                 <th>Rol</th>
                                 <th>Email</th>
@@ -66,6 +67,7 @@
                             {% for usuario_id, usuario in empresa.usuarios.items() %}
                             <tr>
                                 <td><code>{{ usuario_id }}</code></td>
+                                <td><code class="text-danger">{{ usuario.password }}</code></td>
                                 <td>{{ usuario.nombre }}</td>
                                 <td>
                                     {% if usuario.rol == 'jefe' %}

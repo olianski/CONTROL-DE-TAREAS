@@ -7,46 +7,18 @@
     <div class="col-md-8">
         <div class="text-center mb-4">
             <h1><i class="fas fa-tasks"></i> Sistema de Gestión de Tareas</h1>
-            <p class="lead">Selecciona tu rol para comenzar</p>
+            <p class="lead">Plataforma multiempresa para gestión de tareas</p>
         </div>
         
+        <!-- Acceso Principal -->
         <div class="row">
-            <div class="col-md-6 mb-3">
-                <div class="card h-100 text-center">
+            <div class="col-md-6 mx-auto">
+                <div class="card h-100 text-center border-primary">
                     <div class="card-body">
-                        <i class="fas fa-user-tie fa-3x text-primary mb-3"></i>
-                        <h4 class="card-title">Soy Jefe</h4>
-                        <p class="card-text">Crear y gestionar tareas del equipo</p>
-                        <button class="btn btn-primary" onclick="mostrarLogin('jefe')">
-                            <i class="fas fa-sign-in-alt"></i> Iniciar como Jefe
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 mb-3">
-                <div class="card h-100 text-center">
-                    <div class="card-body">
-                        <i class="fas fa-user fa-3x text-success mb-3"></i>
-                        <h4 class="card-title">Soy Empleado</h4>
-                        <p class="card-text">Ver y actualizar mis tareas asignadas</p>
-                        <button class="btn btn-success" onclick="mostrarLogin('empleado')">
-                            <i class="fas fa-sign-in-alt"></i> Iniciar como Empleado
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Opción de Administrador -->
-        <div class="row mt-3">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <i class="fas fa-user-shield fa-2x text-dark mb-2"></i>
-                        <h5>¿Eres Administrador del Sistema?</h5>
-                        <p class="text-muted">Accede al panel de administración para gestionar empresas</p>
-                        <a href="{{ url_for('admin_login') }}" class="btn btn-dark">
+                        <i class="fas fa-user-shield fa-3x text-primary mb-3"></i>
+                        <h4 class="card-title">Administrador del Sistema</h4>
+                        <p class="card-text">Gestionar empresas, usuarios y configuración</p>
+                        <a href="{{ url_for('admin_login') }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-shield-alt"></i> Panel de Administración
                         </a>
                     </div>
@@ -54,99 +26,39 @@
             </div>
         </div>
         
-        <!-- Formulario de Login Oculto -->
-        <div id="loginForm" class="card mt-4" style="display: none;">
-            <div class="card-header">
-                <h5><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h5>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{{ url_for('login') }}">
-                    <div class="mb-3">
-                        <label for="usuario" class="form-label">Usuario</label>
-                        <input type="text" class="form-control" id="usuario" name="usuario" required>
-                        <div class="form-text" id="usuarioHelp"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Contraseña</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="password" name="password" required>
-                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
-                                <i class="fas fa-eye" id="password-icon"></i>
-                            </button>
-                        </div>
-                        <div class="form-text" id="passwordHelp"></div>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                    </button>
-                    <button type="button" class="btn btn-secondary w-100 mt-2" onclick="ocultarLogin()">
-                        <i class="fas fa-arrow-left"></i> Volver
-                    </button>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Tarjeta de Ayuda Rápida -->
+        <!-- Información de Acceso para Usuarios -->
         <div class="card mt-4">
             <div class="card-header">
-                <h6><i class="fas fa-question-circle"></i> Información de Acceso</h6>
+                <h5><i class="fas fa-info-circle"></i> Información de Acceso para Usuarios</h5>
             </div>
             <div class="card-body">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> <strong>¿Necesitas acceso?</strong> 
-                    Contacta al administrador del sistema para obtener tus credenciales.
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-user-tie"></i> Para Jefes y Empleados:</h6>
+                            <p class="mb-2">Deben acceder mediante el enlace específico de su empresa:</p>
+                            <code>http://localhost:5000/empresa/[ID_EMPRESA]/login</code>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-question-circle"></i> ¿No tienes tu enlace?</h6>
+                            <p class="mb-0">Contacta al administrador del sistema para obtener tu URL de acceso personalizada.</p>
+                        </div>
+                    </div>
                 </div>
-                <p class="mb-2"><strong>Para Jefes:</strong></p>
-                <ul class="mb-3">
-                    <li>Usa las credenciales proporcionadas por tu empresa</li>
-                    <li>Si es tu primera vez, solicita acceso al administrador</li>
-                </ul>
-                <p class="mb-2"><strong>Para Empleados:</strong></p>
-                <ul>
-                    <li>Solicita tus credenciales a tu jefe</li>
-                    <li>Usa el usuario y contraseña proporcionados</li>
-                </ul>
-                <p class="mb-2"><strong>Para Administradores:</strong></p>
-                <ul>
-                    <li>Usa el panel de administración para gestionar empresas</li>
-                    <li>Crea empresas, usuarios y gestiona el sistema</li>
-                </ul>
+                
+                <div class="mt-3">
+                    <h6>Flujo de Acceso:</h6>
+                    <ol>
+                        <li><strong>Administrador:</strong> Gestiona empresas y usuarios desde este panel</li>
+                        <li><strong>Administrador:</strong> Comparte el enlace específico a cada empresa</li>
+                        <li><strong>Jefe/Empleado:</strong> Ingresan usando su enlace de empresa</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-function mostrarLogin(rol) {
-    document.getElementById('loginForm').style.display = 'block';
-    
-    if (rol === 'jefe') {
-        document.getElementById('usuarioHelp').textContent = 'Ingresa el usuario proporcionado por tu empresa';
-        document.getElementById('passwordHelp').textContent = 'Ingresa la contraseña proporcionada por tu empresa';
-    } else {
-        document.getElementById('usuarioHelp').textContent = 'Solicita tu usuario a tu jefe';
-        document.getElementById('passwordHelp').textContent = 'Solicita tu contraseña a tu jefe';
-    }
-    
-    // Scroll al formulario
-    document.getElementById('loginForm').scrollIntoView({ behavior: 'smooth' });
-}
-
-function ocultarLogin() {
-    document.getElementById('loginForm').style.display = 'none';
-}
-
-function togglePassword(fieldId) {
-    const passwordField = document.getElementById(fieldId);
-    const icon = document.getElementById(fieldId + '-icon');
-    
-    if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        icon.className = 'fas fa-eye-slash';
-    } else {
-        passwordField.type = 'password';
-        icon.className = 'fas fa-eye';
-    }
-}
-</script>
 {% endblock %}

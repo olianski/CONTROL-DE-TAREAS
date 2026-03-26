@@ -18,53 +18,158 @@
     </div>
 </div>
 
-<!-- Estadísticas Generales -->
+<!-- Estadísticas Generales Mejoradas -->
 <div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card text-center">
+    <div class="col-md-2">
+        <div class="card text-center border-primary">
             <div class="card-body">
                 <h3 class="text-primary">{{ stats.total_empresas }}</h3>
-                <p class="card-text">Total Empresas</p>
+                <p class="card-text mb-0">Total Empresas</p>
+                <small class="text-muted">{{ stats.empresas_suspendidas }} suspendidas</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-center">
+    <div class="col-md-2">
+        <div class="card text-center border-success">
             <div class="card-body">
                 <h3 class="text-success">{{ stats.empresas_activas }}</h3>
-                <p class="card-text">Empresas Activas</p>
+                <p class="card-text mb-0">Empresas Activas</p>
+                <small class="text-muted">Operativas</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-center">
+    <div class="col-md-2">
+        <div class="card text-center border-info">
             <div class="card-body">
-                <h3 class="text-warning">{{ stats.total_usuarios }}</h3>
-                <p class="card-text">Total Usuarios</p>
+                <h3 class="text-info">{{ stats.total_usuarios }}</h3>
+                <p class="card-text mb-0">Total Usuarios</p>
+                <small class="text-muted">Registrados</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-center">
+    <div class="col-md-2">
+        <div class="card text-center border-warning">
             <div class="card-body">
-                <h3 class="text-info">{{ stats.total_tareas }}</h3>
-                <p class="card-text">Total Tareas</p>
+                <h3 class="text-warning">${{ "%.0f"|format(stats.ingresos_mensuales) }}</h3>
+                <p class="card-text mb-0">Ingresos Mensuales</p>
+                <small class="text-muted">USD</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-danger">
+            <div class="card-body">
+                <h3 class="text-danger">{{ stats.pagos_pendientes }}</h3>
+                <p class="card-text mb-0">Pagos Pendientes</p>
+                <small class="text-muted">Por confirmar</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center border-secondary">
+            <div class="card-body">
+                <h3 class="text-secondary">{{ stats.total_tareas }}</h3>
+                <p class="card-text mb-0">Total Tareas</p>
+                <small class="text-muted">Sistema</small>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Alertas y Notificaciones -->
+{% if notificaciones %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-bell"></i> Notificaciones Recientes ({{ stats.notificaciones_no_leidas }} sin leer)</h5>
+            </div>
+            <div class="card-body">
+                {% for notificacion in notificaciones[:3] %}
+                <div class="alert alert-{{ 'primary' if notificacion.tipo == 'nueva_empresa' else 'danger' if notificacion.tipo == 'suspension_auto' else 'info' }} alert-sm mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ notificacion.titulo }}</strong>
+                            <br>
+                            <small>{{ notificacion.mensaje }}</small>
+                        </div>
+                        <small class="text-muted">{{ notificacion.fecha }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="text-center mt-2">
+                    <a href="{{ url_for('notificaciones_admin') }}" class="btn btn-sm btn-outline-info">
+                        Ver todas las notificaciones
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Empresas con Pagos Próximos -->
+{% if empresas_pago_proximo %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Pagos Próximos (7 días)</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for empresa in empresas_pago_proximo %}
+                    <div class="col-md-4 mb-2">
+                        <div class="alert alert-warning alert-sm mb-0">
+                            <strong>{{ empresa.nombre }}</strong>
+                            <br>
+                            <small>Pago en {{ empresa.dias_restantes }} días - ${{ empresa.monto }} USD</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- Acciones Rápidas -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5><i class="fas fa-tools"></i> Acciones Rápidas</h5>
+                <h5><i class="fas fa-bolt"></i> Acciones Rápidas</h5>
             </div>
             <div class="card-body">
-                <a href="{{ url_for('crear_empresa') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Crear Nueva Empresa
-                </a>
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="{{ url_for('crear_empresa') }}" class="btn btn-primary btn-lg w-100 mb-2">
+                            <i class="fas fa-plus"></i> Nueva Empresa
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('gestion_pagos') }}" class="btn btn-success btn-lg w-100 mb-2">
+                            <i class="fas fa-credit-card"></i> Gestionar Pagos
+                            {% if stats.pagos_pendientes > 0 %}
+                            <span class="badge bg-danger">{{ stats.pagos_pendientes }}</span>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('verificar_suscripciones_route') }}" class="btn btn-warning btn-lg w-100 mb-2">
+                            <i class="fas fa-sync"></i> Verificar Suscripciones
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('notificaciones_admin') }}" class="btn btn-info btn-lg w-100 mb-2">
+                            <i class="fas fa-bell"></i> Notificaciones
+                            {% if stats.notificaciones_no_leidas > 0 %}
+                            <span class="badge bg-danger">{{ stats.notificaciones_no_leidas }}</span>
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -98,14 +203,26 @@
                                 {% for empresa_id, empresa in empresas.items() %}
                                 <tr>
                                     <td><span class="badge bg-secondary">{{ empresa_id }}</span></td>
-                                    <td><strong>{{ empresa.nombre }}</strong></td>
+                                    <td>
+                                        <strong>{{ empresa.nombre }}</strong>
+                                        {% if empresa.suscripcion %}
+                                        <br>
+                                        <small class="text-muted">{{ empresa.suscripcion.nombre_plan }} - ${{ empresa.suscripcion.precio_mensual }}/mes</small>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ empresa.nit }}</td>
                                     <td>{{ empresa.sector }}</td>
                                     <td>
                                         {% if empresa.estado == 'activo' %}
-                                            <span class="badge bg-success">Activo</span>
+                                            {% if empresa.suscripcion and empresa.suscripcion.estado == 'activa' %}
+                                                <span class="badge bg-success">Activo</span>
+                                            {% elif empresa.suscripcion and empresa.suscripcion.estado == 'gracia' %}
+                                                <span class="badge bg-warning">Período Gracia</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Pago Vencido</span>
+                                            {% endif %}
                                         {% else %}
-                                            <span class="badge bg-danger">Suspendido</span>
+                                            <span class="badge bg-secondary">Suspendido</span>
                                         {% endif %}
                                     </td>
                                     <td>{{ empresa.usuarios|length }}</td>
@@ -113,9 +230,18 @@
                                     <td>{{ empresa.fecha_creacion }}</td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{{ url_for('ver_empresa', empresa_id=empresa_id) }}" 
-                                               class="btn btn-outline-primary" title="Ver detalles">
-                                                <i class="fas fa-eye"></i>
+                                            <a href="{{ url_for('acceder_empresa', empresa_id=empresa_id) }}" 
+                                               class="btn btn-outline-success" 
+                                               title="Acceder como supervisor"
+                                               onclick="return confirm('¿Acceder como supervisor a {{ empresa.nombre }}?')">
+                                                <i class="fas fa-sign-in-alt"></i>
+                                            </a>
+                                            
+                                            <a href="#" 
+                                               class="btn btn-outline-info" 
+                                               onclick="copiarAcceso('{{ empresa_id }}')"
+                                               title="Copiar URL de acceso">
+                                                <i class="fas fa-copy"></i>
                                             </a>
                                             
                                             {% if empresa.estado == 'activo' %}
@@ -133,13 +259,6 @@
                                                     <i class="fas fa-play"></i>
                                                 </a>
                                             {% endif %}
-                                            
-                                            <a href="#" 
-                                               class="btn btn-outline-info" 
-                                               onclick="copiarAcceso('{{ empresa_id }}')"
-                                               title="Copiar URL de acceso">
-                                                <i class="fas fa-copy"></i>
-                                            </a>
                                             
                                             <a href="{{ url_for('eliminar_empresa', empresa_id=empresa_id) }}" 
                                                class="btn btn-outline-danger" 

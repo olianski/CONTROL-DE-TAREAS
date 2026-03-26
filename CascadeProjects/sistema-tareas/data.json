@@ -48,12 +48,76 @@
           "descripcion": "Esta es una tarea de prueba para verificar el funcionamiento del sistema. Por favor, actualiza el progreso y marca como completada.",
           "asignado_a": "emp_prueba1",
           "prioridad": "media",
-          "estado": "pendiente",
-          "progreso": 0,
+          "estado": "en revisión",
+          "progreso": 80,
           "fecha_creacion": "2026-03-25 17:33:05",
           "fecha_limite": "",
+          "comentarios": [
+            {
+              "texto": "voy empezando",
+              "fecha": "2026-03-25 20:29:41",
+              "autor": "Empleado Prueba 1"
+            }
+          ],
+          "es_prueba": true,
+          "evidencias": [
+            {
+              "archivo": "20260325_202941_pngwing.com (2).png",
+              "ruta": "static\\evidencias\\emp_1\\1\\20260325_202941_pngwing.com (2).png",
+              "fecha": "2026-03-25 20:29:41",
+              "subido_por": "Empleado Prueba 1"
+            },
+            {
+              "archivo": "20260325_202959_pngwing.com (2).png",
+              "ruta": "static\\evidencias\\emp_1\\1\\20260325_202959_pngwing.com (2).png",
+              "fecha": "2026-03-25 20:29:59",
+              "subido_por": "Empleado Prueba 1"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "titulo": "hacer mercado",
+          "descripcion": "venga",
+          "asignado_a": "emp_prueba1",
+          "prioridad": "alta",
+          "estado": "completada",
+          "progreso": 100,
+          "fecha_creacion": "2026-03-25 22:42:41",
+          "fecha_limite": "2026-03-24",
           "comentarios": [],
-          "es_prueba": true
+          "creado_por": "admin"
+        }
+      ],
+      "estadisticas": {
+        "tareas_pendientes": 1,
+        "tareas_en_progreso": 0,
+        "tareas_completadas": 0,
+        "usuarios_activos": 0,
+        "ultima_actividad": "2026-03-25 22:42:41"
+      },
+      "notificaciones": [
+        {
+          "id": 1,
+          "tipo": "tarea_vencida",
+          "titulo": "⚠️ Tarea Vencida: hacer mercado",
+          "mensaje": "La tarea \"hacer mercado\" debía completarse el 2026-03-24. Contacta a tu supervisor.",
+          "tarea_id": 2,
+          "usuario_destino": "emp_prueba1",
+          "fecha": "2026-03-25 22:42:11",
+          "leida": true,
+          "urgencia": "alta"
+        },
+        {
+          "id": 3,
+          "tipo": "tarea_empleado_vencida",
+          "titulo": "🚨 Tarea de Empleado Vencida",
+          "mensaje": "La tarea \"hacer mercado\" asignada a Empleado Prueba 1 está vencida desde 2026-03-24.",
+          "tarea_id": 2,
+          "usuario_destino": "jefe",
+          "fecha": "2026-03-25 22:42:11",
+          "leida": true,
+          "urgencia": "alta"
         }
       ]
     }

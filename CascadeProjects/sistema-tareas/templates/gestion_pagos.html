@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Pagos - Administrador{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-credit-card"></i> Gestión de Pagos</h2>
+            <div>
+                <a href="{{ url_for('dashboard_admin') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+                <a href="{{ url_for('verificar_suscripciones_route') }}" class="btn btn-warning">
+                    <i class="fas fa-sync"></i> Verificar Suscripciones
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas de Pagos -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Pagos Completados</h5>
+                <h2>{{ pagos_completados|length }}</h2>
+                <small>Total: ${{ "%.2f"|format(pagos_completados|sum(attribute='monto')) }} USD</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">Pagos Pendientes</h5>
+                <h2>{{ pagos_pendientes|length }}</h2>
+                <small>Total: ${{ "%.2f"|format(pagos_pendientes|sum(attribute='monto')) }} USD</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Ingresos Mensuales</h5>
+                <h2>${{ "%.2f"|format(pagos_completados|selectattr('estado', 'equalto', 'completado')|sum(attribute='monto')) }}</h2>
+                <small>Este mes</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Empresas</h5>
+                <h2>{{ empresas|length }}</h2>
+                <small>Activas: {{ empresas|selectattr('estado', 'equalto', 'activo')|list|length }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagos Pendientes -->
+{% if pagos_pendientes %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5><i class="fas fa-exclamation-triangle"></i> Pagos Pendientes de Confirmación</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Empresa</th>
+                                <th>Concepto</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pago in pagos_pendientes %}
+                            <tr>
+                                <td>#{{ pago.id }}</td>
+                                <td>
+                                    <strong>{{ pago.empresa_nombre }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ empresas[pago.empresa_id].nit }}</small>
+                                </td>
+                                <td>{{ pago.concepto }}</td>
+                                <td><span class="badge bg-warning">${{ pago.monto }} USD</span></td>
+                                <td>{{ pago.fecha }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('confirmar_pago', pago_id=pago.id) }}" class="d-inline">
+                                        <div class="input-group input-group-sm">
+                                            <select name="metodo_pago" class="form-select form-select-sm" required>
+                                                <option value="">Método</option>
+                                                <option value="transferencia">Transferencia</option>
+                                                <option value="efectivo">Efectivo</option>
+                                                <option value="tarjeta">Tarjeta</option>
+                                                <option value="nequi">Nequi</option>
+                                                <option value="daviplata">Daviplata</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check"></i> Confirmar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Histórico de Pagos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-history"></i> Histórico de Pagos</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Empresa</th>
+                                <th>Concepto</th>
+                                <th>Monto</th>
+                                <th>Método</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Confirmación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pago in pagos %}
+                            <tr>
+                                <td>#{{ pago.id }}</td>
+                                <td>
+                                    <strong>{{ pago.empresa_nombre }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ empresas[pago.empresa_id].nit }}</small>
+                                </td>
+                                <td>{{ pago.concepto }}</td>
+                                <td>${{ pago.monto }} USD</td>
+                                <td>
+                                    {% if pago.metodo %}
+                                        <span class="badge bg-info">{{ pago.metodo.title() }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if pago.estado == 'completado' %}
+                                        <span class="badge bg-success">Completado</span>
+                                    {% elif pago.estado == 'pendiente' %}
+                                        <span class="badge bg-warning">Pendiente</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ pago.estado }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ pago.fecha }}</td>
+                                <td>
+                                    {% if pago.fecha_confirmacion %}
+                                        <small class="text-success">{{ pago.fecha_confirmacion }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

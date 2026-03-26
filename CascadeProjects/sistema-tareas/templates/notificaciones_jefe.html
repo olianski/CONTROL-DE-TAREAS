@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Notificaciones - Sistema de Tareas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-bell"></i> Notificaciones</h2>
+        <p class="text-muted">Centro de notificaciones - {{ empresa_nombre }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-list"></i> Todas las Notificaciones</h5>
+                <a href="{{ url_for('dashboard_jefe') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+            <div class="card-body">
+                {% if notificaciones %}
+                    {% for notificacion in notificaciones %}
+                    <div class="alert alert-{{ 
+                        'danger' if notificacion.urgencia == 'alta' 
+                        else 'warning' if notificacion.urgencia == 'media' 
+                        else 'info' 
+                    }} alert-dismissible fade show mb-3" role="alert">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="alert-heading mb-1">
+                                    {{ notificacion.titulo }}
+                                </h6>
+                                <p class="mb-2">{{ notificacion.mensaje }}</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock"></i> {{ notificacion.fecha }}
+                                    {% if notificacion.tarea_id %}
+                                    | <a href="{{ url_for('ver_tarea', tarea_id=notificacion.tarea_id) }}" class="text-decoration-none">
+                                        <i class="fas fa-eye"></i> Ver Tarea
+                                    </a>
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="ms-3">
+                                {% if notificacion.urgencia == 'alta' %}
+                                <span class="badge bg-danger">Alta</span>
+                                {% elif notificacion.urgencia == 'media' %}
+                                <span class="badge bg-warning">Media</span>
+                                {% else %}
+                                <span class="badge bg-info">Baja</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-bell-slash fa-4x mb-3"></i>
+                        <h5>No tienes notificaciones</h5>
+                        <p>Las notificaciones aparecerán aquí cuando haya eventos importantes.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen de notificaciones -->
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-center border-danger">
+            <div class="card-body">
+                <h3 class="text-danger">
+                    {{ notificaciones | selectattr('urgencia', 'equalto', 'alta') | list | length }}
+                </h3>
+                <p class="card-text mb-0">Urgentes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h3 class="text-warning">
+                    {{ notificaciones | selectattr('urgencia', 'equalto', 'media') | list | length }}
+                </h3>
+                <p class="card-text mb-0">Medias</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center border-info">
+            <div class="card-body">
+                <h3 class="text-info">
+                    {{ notificaciones | selectattr('urgencia', 'equalto', 'baja') | list | length }}
+                </h3>
+                <p class="card-text mb-0">Bajas</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

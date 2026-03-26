@@ -13,13 +13,46 @@
 <div class="row">
     <div class="col-md-8">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5><i class="fas fa-list"></i> Tareas Asignadas</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ url_for('notificaciones_jefe') }}" class="btn btn-outline-danger position-relative">
+                        <i class="fas fa-bell"></i> Notificaciones
+                        {% if stats.notificaciones_no_leidas > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ stats.notificaciones_no_leidas }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    <div class="d-flex align-items-center">
+                        <label for="filtro_empleado" class="form-label me-2 mb-0">Empleado:</label>
+                        <select class="form-select form-select-sm" id="filtro_empleado" onchange="filtrarTareas()">
+                            <option value="">Todos</option>
+                            {% for usuario_id, usuario_info in usuarios.items() %}
+                            <option value="{{ usuario_id }}">{{ usuario_info.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <label for="filtro_estado" class="form-label me-2 mb-0">Estado:</label>
+                        <select class="form-select form-select-sm" id="filtro_estado" onchange="filtrarTareas()">
+                            <option value="">Todos</option>
+                            <option value="pendiente">📋 Pendiente</option>
+                            <option value="asignada">📌 Asignada</option>
+                            <option value="en espera">⏸️ En Espera</option>
+                            <option value="en progreso">⚙️ En Progreso</option>
+                            <option value="en revisión">🔍 En Revisión</option>
+                            <option value="completada">✅ Completada</option>
+                            <option value="cancelada">❌ Cancelada</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 {% if tareas %}
                     {% for tarea in tareas %}
-                    <div class="card task-card priority-{{ tarea.prioridad }} estado-{{ tarea.estado.replace(' ', '-') }}">
+                    <div class="card task-card priority-{{ tarea.prioridad }} estado-{{ tarea.estado.replace(' ', '-') }}" 
+                     data-empleado="{{ tarea.asignado_a }}" data-estado="{{ tarea.estado }}">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-8">
@@ -44,8 +77,14 @@
                                             {{ tarea.estado.upper() }}
                                         </span>
                                     </div>
-                                    <div class="progress mb-2">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ tarea.progreso }}%">
+                                    <div class="progress mb-2 progress-enhanced">
+                                        {% set progress_color = 'danger' if tarea.progreso < 25 else 'warning' if tarea.progreso < 50 else 'info' if tarea.progreso < 75 else 'success' %}
+                                        <div class="progress-bar progress-bar-striped progress-bar-enhanced bg-{{ progress_color }} w-{{ tarea.progreso }}" 
+                                             role="progressbar" 
+                                             data-progress="{{ tarea.progreso }}"
+                                             aria-valuenow="{{ tarea.progreso }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
                                             {{ tarea.progreso }}%
                                         </div>
                                     </div>
@@ -203,6 +242,60 @@
         </div>
     </div>
 </div>
+
+<script>
+function filtrarTareas() {
+    const filtroEmpleado = document.getElementById('filtro_empleado').value;
+    const filtroEstado = document.getElementById('filtro_estado').value;
+    const todasLasTareas = document.querySelectorAll('.task-card');
+    
+    todasLasTareas.forEach(tarea => {
+        const empleadoAsignado = tarea.getAttribute('data-empleado');
+        const estadoTarea = tarea.getAttribute('data-estado');
+        
+        const coincideEmpleado = filtroEmpleado === '' || empleadoAsignado === filtroEmpleado;
+        const coincideEstado = filtroEstado === '' || estadoTarea === filtroEstado;
+        
+        if (coincideEmpleado && coincideEstado) {
+            tarea.style.display = 'block';
+        } else {
+            tarea.style.display = 'none';
+        }
+    });
+    
+    // Mostrar mensaje si no hay tareas visibles
+    const tareasVisibles = Array.from(todasLasTareas).filter(tarea => 
+        tarea.style.display !== 'none'
+    );
+    const cartelNoTareas = document.querySelector('.sin-tareas-filtro');
+    
+    if (tareasVisibles.length === 0 && (filtroEmpleado !== '' || filtroEstado !== '')) {
+        if (!cartelNoTareas) {
+            const mensaje = document.createElement('div');
+            mensaje.className = 'text-center text-muted sin-tareas-filtro mt-3';
+            
+            let textoMensaje = '<i class="fas fa-search fa-2x mb-2"></i><p>';
+            if (filtroEmpleado !== '' && filtroEstado !== '') {
+                const nombreEmpleado = document.querySelector(`#filtro_empleado option[value="${filtroEmpleado}"]`).textContent;
+                const nombreEstado = document.querySelector(`#filtro_estado option[value="${filtroEstado}"]`).textContent;
+                textoMensaje += `No hay tareas "${nombreEstado}" asignadas a "${nombreEmpleado}"`;
+            } else if (filtroEmpleado !== '') {
+                const nombreEmpleado = document.querySelector(`#filtro_empleado option[value="${filtroEmpleado}"]`).textContent;
+                textoMensaje += `No hay tareas asignadas a "${nombreEmpleado}"`;
+            } else if (filtroEstado !== '') {
+                const nombreEstado = document.querySelector(`#filtro_estado option[value="${filtroEstado}"]`).textContent;
+                textoMensaje += `No hay tareas con estado "${nombreEstado}"`;
+            }
+            textoMensaje += '</p>';
+            
+            mensaje.innerHTML = textoMensaje;
+            document.querySelector('.card-body').appendChild(mensaje);
+        }
+    } else if (cartelNoTareas) {
+        cartelNoTareas.remove();
+    }
+}
+</script>
 {% endblock %}
 
 <script>
